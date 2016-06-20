@@ -111,6 +111,6 @@ target/
 
 .runNumber
 
-*.txt
+.txt
 
-*.csv
+.csv
