@@ -114,3 +114,7 @@ target/
 .txt
 
 .csv
+
+Notebooks/Centroids.txt
+
+Notebooks/Kmeandata.csv
