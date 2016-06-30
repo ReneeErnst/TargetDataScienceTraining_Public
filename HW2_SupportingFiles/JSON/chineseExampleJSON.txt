@@ -1,0 +1,5 @@
+{"email": {"id": "D1", "Label": "1", "content": {"subject":"Chinese Beijing", "body":"Chinese" } } }
+{"email": {"id": "D2", "Label": "1", "content": {"subject":"Chinese Chinese", "body":"Shanghai" } } }
+{"email": {"id": "D3", "Label": "1", "content": {"subject":"Chinese", "body":"Macao" } } }
+{"email": {"id": "D4", "Label": "0", "content": {"subject":"Tokyo Japan", "body":"Chinese" } } }
+{"email": {"id": "D5", "Label": "0", "content": {"subject":"Chinese Chinese", "body":"Chinese Tokyo Japan" } } }
