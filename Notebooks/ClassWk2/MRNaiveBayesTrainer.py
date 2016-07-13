@@ -13,9 +13,7 @@ class MRNaiveBayesTrainer(MRJob):
 
     def __init__(self, *args, **kwargs):
         super(MRNaiveBayesTrainer, self).__init__(*args, **kwargs)
-        # now only needed for priors???
         self.modelStats = {}
-        
 
     def jobconf(self):
         orig_jobconf = super(MRNaiveBayesTrainer, self).jobconf()        
@@ -37,15 +35,14 @@ class MRNaiveBayesTrainer(MRJob):
         words = text.split()
         if docID != "D5":  #skip doc d5 in chinese dataset
             if docClass == "1":
-                yield ("TomsPriors", "0,1")
-                yield ("*classTotalFreq", "0," + str(len(words)))
+                yield("TomsPriors", "0,1")
                 for word in words:
                     yield(word, "0,1")
             else:
                 yield("TomsPriors", "1,0")
-                yield ("*classTotalFreq", str(len(words)), ",0")
                 for word in words:
                     yield(word, "1,0")
+        
 
     def reducer(self, word, values):
         #aggregate counts for Pr(Word|Class)
@@ -55,66 +52,35 @@ class MRNaiveBayesTrainer(MRJob):
         for value in values:
             w0, w1 =  value.split(",")
             w0Total += float(w0)
-            w1Total += float(w1) 
-        if word == "*classTotalFreq":
-            self.modelStats[word] = [w0Total, w1Total]
-        elif word == 'TomsPriors':
-            yield ("TomsPriors", str(w0Total / (w0Total + w1Total)) + ",", + str(w1Total / (w0Total + w1Total)))
-        else:
-            yield (word, str(w0Total / self.modelStats["classTotalFreq"][0]) + ",", 
-                   + str(w1Total / self.modelStats("*classTotalFreq"[1])))
-
-        
-        
-        
-        
-#         classCount0, classCount1 = self.modelStats.get("TomsPriors")
-#         del self.modelStats["TomsPriors"]
-#         total = classCount0 + classCount1
-#         yield("TomsPriors", ','.join(str(j) for j in [classCount0, classCount1, classCount0/total, classCount1/total])) 
-#         for k in self.modelStats.keys():
-#             yield(k, ','.join(str(j) for j in [self.modelStats[k][0],
-#                       self.modelStats[k][1],
-#                       (self.modelStats[k][0] + 1) /(class0Total + vocabularySize), 
-#                       (self.modelStats[k][1] +1)/(class1Total+vocabularySize)]))  
-
-#     def reducer_old(self, word, values):
-#         #aggregate counts for Pr(Word|Class)
-#         #yield("number of values for "+word, str(values))
-#         w0Total=0
-#         w1Total=0
-#         for value in values:
-#             w0, w1 =  value.split(",")
-#             w0Total += float(w0)
-#             w1Total += float(w1)  
-#         self.modelStats[word] =  [w0Total, w1Total]
+            w1Total += float(w1)  
+        self.modelStats[word] =  [w0Total, w1Total]
 
         #yield("JIMI "+word, [w0Total, w1Total])
-#     def reducer_final(self):       
-#         class0Total = 0
-#         class1Total = 0
-#         for k in self.modelStats.keys():
-#             if k != "TomsPriors":
-#                 class0Total += self.modelStats[k][0]
-#                 class1Total += self.modelStats[k][1]
-#         vocabularySize = len(self.modelStats.keys()) -1  #ignore TomsPriors
-#         #some yields to see some model internal parameters
-#         #yield ("defaultPrior 0 class", class0Total+vocabularySize)
-#         #yield ("defaultPrior 1 class", class1Total+vocabularySize)
-#         #yield ("count 0 class", class0Total)
-#         #yield ("count 1 class", class1Total)
-#         #yield ("vocabularySize", vocabularySize)
+    def reducer_final(self):       
+        class0Total = 0
+        class1Total = 0
+        for k in self.modelStats.keys():
+            if k != "TomsPriors":
+                class0Total += self.modelStats[k][0]
+                class1Total += self.modelStats[k][1]
+        vocabularySize = len(self.modelStats.keys()) -1  #ignore TomsPriors
+        #some yields to see some model internal parameters
+        #yield ("defaultPrior 0 class", class0Total+vocabularySize)
+        #yield ("defaultPrior 1 class", class1Total+vocabularySize)
+        #yield ("count 0 class", class0Total)
+        #yield ("count 1 class", class1Total)
+        #yield ("vocabularySize", vocabularySize)
         
-#         #calculate priors 
-#         classCount0, classCount1 = self.modelStats.get("TomsPriors")
-#         del self.modelStats["TomsPriors"]
-#         total = classCount0 + classCount1
-#         yield("TomsPriors", ','.join(str(j) for j in [classCount0, classCount1, classCount0/total, classCount1/total])) 
-#         for k in self.modelStats.keys():
-#             yield(k, ','.join(str(j) for j in [self.modelStats[k][0],
-#                       self.modelStats[k][1],
-#                       (self.modelStats[k][0] + 1) /(class0Total + vocabularySize), 
-#                       (self.modelStats[k][1] +1)/(class1Total+vocabularySize)]))        
+        #calculate priors 
+        classCount0, classCount1 = self.modelStats.get("TomsPriors")
+        del self.modelStats["TomsPriors"]
+        total = classCount0 + classCount1
+        yield("TomsPriors", ','.join(str(j) for j in [classCount0, classCount1, classCount0/total, classCount1/total])) 
+        for k in self.modelStats.keys():
+            yield(k, ','.join(str(j) for j in [self.modelStats[k][0],
+                      self.modelStats[k][1],
+                      (self.modelStats[k][0] + 1) /(class0Total + vocabularySize), 
+                      (self.modelStats[k][1] +1)/(class1Total+vocabularySize)]))        
 
 # The if __name__ == "__main__": 
 # ... trick exists in Python so that our Python files 
