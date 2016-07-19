@@ -100,9 +100,6 @@ coverage.xml
 *.mo
 *.pot
 
-# Django stuff:
-*.log
-
 # Sphinx documentation
 docs/_build/
 
@@ -113,6 +110,3 @@ target/
 
 .csv
 
-Notebooks/Centroids.txt
-
-Notebooks/Kmeandata.csv
