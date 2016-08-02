@@ -1,0 +1,164 @@
+%%javascript
+**********************************************************************************************
+Known Mathjax Issue with Chrome - a rounding issue adds a border to the right of mathjax markup
+https://github.com/mathjax/MathJax/issues/1300
+A quick hack to fix this based on stackoverflow discussions: 
+http://stackoverflow.com/questions/34277967/chrome-rendering-mathjax-equations-with-a-trailing-vertical-line
+**********************************************************************************************/
+$('.math>span').css("border-left-color","transparent")
+%reload_ext autoreload
+%autoreload 2
+DAMLAS - Machine Learning At Scale
+Assignment - HW3
+Data Analytics and Machine Learning at Scale Target, Minneapolis
+Name: Your Name Goes Here
+Class: DAMLAS (Section Your Section Goes Here, e.g., Summer 2016)
+Email: Your Target Email User Goes Here@Target.com
+Week: 03
+Table of Contents 
+1.HW Introduction 
+2.HW References
+3.HW Problems
+3.0. Short Answer Questions
+3.1. Word Count plus sorting
+3.2. MLlib-centric Kmeans
+3.3. Homegrown KMeans in Spark
+3.4. Making Homegrown KMeans more efficient
+3.5. OPTIONAL Weighted KMeans
+3.6. OPTIONAL Linear Regression
+3.7. OPTIONAL Error surfaces
+1 Instructions
+Back to Table of Contents
+Homework submissions are due by Tueday, 08/02/2016 at 11AM (CT).
+Prepare a single Jupyter note, please include questions, and question numbers in the questions and in the responses. Submit your homework notebook via the following form:
+Submission Link - Google Form
+Documents:
+IPython Notebook, published and viewable online.
+PDF export of IPython Notebook.
+2 Useful References
+Back to Table of Contents
+Karau, Holden, Konwinski, Andy, Wendell, Patrick, & Zaharia, Matei. (2015). Learning Spark: Lightning-fast big data analysis. Sebastopol, CA: O’Reilly Publishers.
+Hastie, Trevor, Tibshirani, Robert, & Friedman, Jerome. (2009). The elements of statistical learning: Data mining, inference, and prediction (2nd ed.). Stanford, CA: Springer Science+Business Media. (Download for free here)
+Ryza, Sandy, Laserson, Uri, Owen, Sean, & Wills, Josh. (2015). Advanced analytics with Spark: Patterns for learning from data at scale. Sebastopol, CA: O’Reilly Publishers.
+Slides for Supervised-ML-Classification-via-GradientDescent
+Slides from High Entropy Friday
+3 HW Problems
+Back to Table of Contents
+HW3.0: Short answer questions 
+Back to Table of Contents
+What is Apache Spark and how is it different to Apache Hadoop? 
+Fill in the blanks: Spark API consists of interfaces to develop applications based on it in Java, _ BLANKS  languages (list languages). 
+Using Spark, resource management can be done either in a single server instance or using a framework such as Mesos or ????? in a distributed manner. 
+What is an RDD and show a fun example of creating one and bringing the first element back to the driver program. 
+HW3.1 WordCount plus sorting 
+Back to Table of Contents 
+The following notebooks will be useful to jumpstart this collection of Homework exercises:
+Example Notebook with Debugging tactics in Spark
+Word Count Quiz
+Work Count Solution
+In Spark write the code to count how often each word appears in a text document (or set of documents). Please use this homework document (with no solutions in it) as a the example document to run an experiment. Report the following: 
+provide a sorted list of tokens in decreasing order of frequency of occurence limited to [top 20 most frequent only] and [bottom 10 least frequent]. 
+OPTIONAL Feel free to do a secondary sort where words with the same frequncy are sorted alphanumerically increasing. Plseas refer to the following notebook for examples of secondary sorts in Spark. Please provide the following [top 20 most frequent terms only] and [bottom 10 least frequent terms]
+NOTE [Please incorporate all referenced notebooks directly into this master notebook as cells for HW submission. I.e., HW submissions should comprise of just one notebook]__
+## Code goes here
+## Drivers & Runners
+## Run Scripts, S3 Sync
+HW3.1.1 
+Back to Table of Contents 
+Modify the above word count code to count words that begin with lower case letters (a-z) and report your findings. Again sort the output words in decreasing order of frequency.
+## Code goes here
+## Drivers & Runners
+## Run Scripts, S3 Sync
+HW3.2: MLlib-centric KMeans
+Back to Table of Contents 
+Using the following MLlib-centric KMeans code snippet: 
+from pyspark.mllib.clustering import KMeans, KMeansModel
+from numpy import array
+from math import sqrt
+# Load and parse the data
+# NOTE  kmeans_data.txt is available here 
+#          https://www.dropbox.com/s/q85t0ytb9apggnh/kmeans_data.txt?dl=0 
+data = sc.textFile("kmeans_data.txt")  
+parsedData = data.map(lambda line: array([float(x) for x in line.split(' ')]))
+# Build the model (cluster the data)
+clusters = KMeans.train(parsedData, 2, maxIterations=10,
+        runs=10, initializationMode="random")
+# Evaluate clustering by computing Within Set Sum of Squared Errors
+def error(point):
+    center = clusters.centers[clusters.predict(point)]
+    return sqrt(sum([x**2 for x in (point - center)]))
+WSSSE = parsedData.map(lambda point: error(point)).reduce(lambda x, y: x + y)
+print("Within Set Sum of Squared Error = " + str(WSSSE))
+# Save and load model
+clusters.save(sc, "myModelPath")
+sameModel = KMeansModel.load(sc, "myModelPath")
+NOTE 
+The kmeans_data.txt is available here https://www.dropbox.com/s/q85t0ytb9apggnh/kmeans_data.txt?dl=0 
+TASKS
+Run this code snippet and list the clusters that your find.
+compute the Within Set Sum of Squared Errors for the found clusters. Comment on your findings.
+## Code goes here
+## Drivers & Runners
+## Run Scripts, S3 Sync
+HW3.3: Homegrown KMeans in Spark 
+Back to Table of Contents 
+Download the following KMeans notebook.
+Generate 3 clusters with 100 (one hundred) data points per cluster (using the code provided). Plot the data. Then run MLlib's Kmean implementation on this data and report your results as follows:
+plot the resulting clusters after 1 iteration, 10 iterations, after 20 iterations, after 100 iterations.
+in each plot please report the Within Set Sum of Squared Errors for the found clusters (as part of the title WSSSE). Comment on the progress of this measure as the KMEans algorithms runs for more iterations. Then plot the WSSSE as a function of the iteration (1, 10, 20, 30, 40, 50, 100).
+## Code goes here
+## Drivers & Runners
+## Run Scripts, S3 Sync
+HW3.4: KMeans Experiments 
+Back to Table of Contents 
+Using this provided homegrown Kmeans code repeat the experiments in HW3.3. Explain any differences between the results in HW3.3 and HW3.4. 
+## Code goes here
+## Drivers & Runners
+## Run Scripts, S3 Sync
+HW3.4.1: Making Homegrown KMeans more efficient 
+Back to Table of Contents 
+The above provided homegrown KMeans implentation in not the most efficient. How can you make it more efficient? Make this change in the code and show it work and comment on the gains you achieve. 
+HINT: have a look at this linear regression notebook
+## Code goes here
+## Drivers & Runners
+## Run Scripts, S3 Sync
+HW3.5: OPTIONAL Weighted KMeans 
+Back to Table of Contents 
+Using this provided homegrown Kmeans code, modify it to do a weighted KMeans and repeat the experiements in HW3.3. Explain any differences between the results in HW3.3 and HW3.5.
+NOTE: Weight each example as follows using the inverse vector length (Euclidean norm): 
+weight(X)= 1/||X||, 
+where ||X|| = SQRT(X.X)= SQRT(X1^2 + X2^2)
+Here X is vector made up of two values X1 and X2.
+[Please incorporate all referenced notebooks directly into this master notebook as cells for HW submission. I.e., HW submissions should comprise of just one notebook]
+## Code goes here
+## Drivers & Runners
+## Run Scripts, S3 Sync
+HW3.6 OPTIONAL Linear Regression
+Back to Table of Contents 
+HW3.6.1 OPTIONAL Linear Regression
+Back to Table of Contents 
+Using this linear regression notebook:
+Generate 2 sets of data with 100 data points using the data generation code provided and plot each in separate plots. Call one the training set and the other the testing set.
+Using MLLib's LinearRegressionWithSGD train up a linear regression model with the training dataset and evaluate with the testing set. What a good number of iterations for training the linear regression model? Justify with plots (e.g., plot MSE as a function of the number of iterations) and words. 
+HW3.6.2 OPTIONAL Linear Regression
+Back to Table of Contents 
+In the notebook provided above, in the cell labeled "Gradient descent (regularization)".
+Fill in the blanks and get this code to work for LASS0 and RIDGE linear regression.
+Using the data from 3.6.1 tune the hyper parameters of your LASS0 and RIDGE regression. Report your findings with words and plots.
+## Code goes here
+## Drivers & Runners
+## Run Scripts, S3 Sync
+HW3.7 OPTIONAL Error surfaces 
+Back to Table of Contents 
+Here is a link to R code with 1 test drivers that plots the linear regression model in model space and in the domain space:
+https://www.dropbox.com/s/3xc3kwda6d254l5/PlotModelAndDomainSpaces.R?dl=0
+Here is a sample output from this script: 
+https://www.dropbox.com/s/my3tnhxx7fr5qs0/image%20%281%29.png?dl=0
+Please use this as inspiration and code a equivalent error surface and heatmap (with isolines) in Spark and show the trajectory of learning taken during gradient descent(after each n-iterations of Gradient Descent):
+Using Spark and Python (using the above R Script as inspiration), plot the error surface for the linear regression model using a heatmap and contour plot. Also plot the current model in the original domain space for every 10th iteration. Plot them side by side if possible for each iteration: lefthand side plot is the model space(w0 and w01) and the righthand side plot is domain space (plot the corresponding model and training data in the problem domain space) with a final pair of graphs showing the entire trajectory in the model and domain space. Make sure to label your plots with iteration numbers, function, model space versus original domain space, MSE on the training data etc.
+Also plot the MSE as a function of each iteration (possibly every 10th iteration). Dont forget to label both axis and the graph also. [Please incorporate all referenced notebooks directly into this master notebook as cells for HW submission. I.e., HW submissions should comprise of just one notebook]
+## Code goes here
+## Drivers & Runners
+## Run Scripts, S3 Sync
+Back to Table of Contents
+------- END OF HWK 9 --------

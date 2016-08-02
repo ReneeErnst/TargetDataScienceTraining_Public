@@ -1,0 +1,8 @@
+A data analyst is on board a passenger jet
+The captain’s voice announced over the radio 
+"We have lost an engine, but there’s no need to worry, we can fly on three engines, it will just take us an hour longer to reach our destination."
+A while later, the radio crackles again:
+“This is your captain speaking, we have lost another engine – but we’re in no danger. Our journey will take an extra two hours though.”
+Not long after, the captain is on the radio again: 
+“We’re down to one engine, we can make it safely, but we’re going to be landing three hours late.”
+“I hope we don’t lose the last engine,” says the analyst, “We’ll be up here forever.”
