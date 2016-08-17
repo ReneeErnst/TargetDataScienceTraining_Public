@@ -1,0 +1,14 @@
+strict digraph  {
+	outlook -> "overcast=True";
+	outlook -> sunny;
+	outlook -> rainy;
+	outlook -> "None=True";
+	sunny -> humidity;
+	rainy -> wind;
+	humidity -> "high=False";
+	humidity -> "None=False";
+	humidity -> "normal=True";
+	wind -> "TRUE=False";
+	wind -> "None=True";
+	wind -> "FALSE=True";
+}
