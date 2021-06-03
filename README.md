@@ -1,2 +1,2 @@
-# TargetDataScienceTraining_Public
-Repo for sharing code related to Target's Data Science Training Course
+# Target Data Science Training 
+Code used in Target's Data Science Training Course
